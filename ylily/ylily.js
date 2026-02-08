@@ -5,15 +5,15 @@ const { createTranscript } = require('discord-html-transcripts')
 const discord = require("discord.js")
 const { ButtonStyle } = require("discord.js")
 const { token } = require('../../config.json');
-require("../bots/SKN/ylilydp")
+require("../ylily/ylilydp")
 
 const client1 = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers] });
 
 client1.commands = new Collection();
-const commandFiles = fs.readdirSync('./bots/SKN/SKN').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync('./ylily/cmds').filter(file => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-  const command = require(`./SKN/${file}`);
+  const command = require(`./cmds/${file}`);
   client1.commands.set(command.data.name, command);
 }
 
