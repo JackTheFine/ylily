@@ -117,7 +117,7 @@ async function runSpeedDating(interaction, client) {
       pairs.push([r1, r2]);
     }
 
-    const limitedPairs = pairs.slice(0, 25);
+    const limitedPairs = pairs.slice(0, 37);
 
     await Promise.all(
       limitedPairs.map(async ([r1, r2]) => {
@@ -135,8 +135,8 @@ async function runSpeedDating(interaction, client) {
           ],
           parent: defaults.categoryParent,
         });
-
-        channel.send(`${timeMinutes} Minutes, starting now! (Round ${roundIndex + 1})`);
+        channel.send(`${interaction.guild.roles.cache.get(r1)}${interaction.guild.roles.cache.get(r2)}`)
+        channel.send(`Welcome to your date! You have ${timeMinutes} Minutes, and this is round: ${roundIndex + 1}`);
         startTimer(channel.id, r1, r2);
         await new Promise(r => setTimeout(r, 500));
       })
