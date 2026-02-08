@@ -1,5 +1,4 @@
 const { EmbedBuilder } = require('discord.js');
-const defaults = require('./defaults.json');
 const discord = require("discord.js");
 const { createTranscript } = require('discord-html-transcripts');
 const { ActionRowBuilder, ButtonBuilder, SlashCommandBuilder } = require('@discordjs/builders');
@@ -15,7 +14,7 @@ module.exports = {
         .setRequired(true))
     .addStringOption(option =>
       option.setName('roles')
-        .setDescription('Enter the roles you want to select (comma-separated IDs)')
+        .setDescription('Enter the roles you want to select (USE THE "@" TAGS, NOT IDS!!!)')
         .setRequired(true))
     .addIntegerOption(option =>
       option.setName('rounds')
@@ -24,6 +23,7 @@ module.exports = {
 
   async execute(interaction, client) {
     await interaction.reply({ content: "beginning, this will update when" });
+    interaction.followUp({ content: "yes its supposed to say that", ephemeral: true })
     const msg = await interaction.fetchReply();
     runSpeedDating(interaction, client, msg).catch(err => {
       console.error("Speed dating crashed:", err);
@@ -32,6 +32,8 @@ module.exports = {
 };
 
 async function runSpeedDating(interaction, client, msg) {
+  delete require.cache[require.resolve('./defaults.json')];
+  const defaults = require('./defaults.json');
   const input = interaction.options.getString('roles');
   const roles = [...input.matchAll(/<@&(\d+)>/g)].map(m => m[1]);
   const timeMinutes = interaction.options.getInteger('time');
@@ -137,7 +139,11 @@ async function runSpeedDating(interaction, client, msg) {
           parent: defaults.categoryParent,
         });
         channel.send(`${interaction.guild.roles.cache.get(r1)}${interaction.guild.roles.cache.get(r2)}`)
+        if (timeMinutes % 60 == 0) {
+          channel.send(`Welcome to your date! You have ${timeMinutes / 60} Hour(s), and this is round: ${roundIndex + 1}`);
+        } else {
         channel.send(`Welcome to your date! You have ${timeMinutes} Minutes, and this is round: ${roundIndex + 1}`);
+        }
         startTimer(channel.id, r1, r2);
         await new Promise(r => setTimeout(r, 500));
       })
