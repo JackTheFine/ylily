@@ -24,13 +24,14 @@ module.exports = {
 
   async execute(interaction, client) {
     await interaction.reply({ content: "beginning, this will update when" });
-    runSpeedDating(interaction, client).catch(err => {
+    const msg = await interaction.fetchReply();
+    runSpeedDating(interaction, client, msg).catch(err => {
       console.error("Speed dating crashed:", err);
     });
   }
 };
 
-async function runSpeedDating(interaction, client) {
+async function runSpeedDating(interaction, client, msg) {
   const input = interaction.options.getString('roles');
   const roles = [...input.matchAll(/<@&(\d+)>/g)].map(m => m[1]);
   const timeMinutes = interaction.options.getInteger('time');
@@ -150,5 +151,11 @@ async function runSpeedDating(interaction, client) {
     await new Promise(resolve => setTimeout(resolve, timeMinutes * 60000));
   }
 
-  await interaction.editReply("done");
+  client.channels.fetch(msg.channelId)
+  .then(channel => channel.messages.fetch(msg.id))
+  .then(message => message.edit("done"))
+  .catch(err => {
+    if (err.code === 10008) return;
+    console.error(err);
+  });
 }
