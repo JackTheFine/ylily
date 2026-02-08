@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const { createTranscript } = require('discord-html-transcripts')
 const discord = require("discord.js")
 const { ButtonStyle } = require("discord.js")
-const { token } = require('../../config.json');
+const { token } = require('../config.json');
 require("../ylily/ylilydp")
 
 const client1 = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates, GatewayIntentBits.GuildMembers] });
@@ -19,7 +19,7 @@ for (const file of commandFiles) {
 
 client1.once(Events.ClientReady, () => {
   console.log(`Ready! (logged into ${client1.user.tag})`);
-  client1.user.setPresence({activities: [{ name: `e`, type: ActivityType.Watching}], status: 'idle'})
+  client1.user.setPresence({activities: [{ name: `im coming to the cottage`, type: ActivityType.Watching}], status: 'idle'})
 });
 
 client1.on(Events.InteractionCreate, async interaction => {

@@ -1,7 +1,7 @@
 
 const fs = require("fs");
 const { REST, Routes } = require('discord.js');
-const { token, clientId, guildId } = require('../../config.json');
+const { token, clientId, guildId } = require('../config.json');
 const commands = [];
 
 const commandFiles = fs.readdirSync('./ylily/cmds').filter(file => file.endsWith('.js'));

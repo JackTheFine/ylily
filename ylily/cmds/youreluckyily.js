@@ -24,7 +24,6 @@ module.exports = {
 
   async execute(interaction, client) {
     await interaction.reply({ content: "beginning, this will update when" });
-
     runSpeedDating(interaction, client).catch(err => {
       console.error("Speed dating crashed:", err);
     });
@@ -32,7 +31,8 @@ module.exports = {
 };
 
 async function runSpeedDating(interaction, client) {
-  const roles = interaction.options.getString('roles').split(",");
+  const input = interaction.options.getString('roles');
+  const roles = [...input.matchAll(/<@&(\d+)>/g)].map(m => m[1]);
   const timeMinutes = interaction.options.getInteger('time');
   const rounds = interaction.options.getInteger('rounds');
   const timer = (timeMinutes * 60000) - 60000;
@@ -42,7 +42,6 @@ async function runSpeedDating(interaction, client) {
   }
 
   const usedPairs = new Set();
-  const permanentChannels = new Map();
 
   function shuffle(array) {
     let currentIndex = array.length, randomIndex;
@@ -55,28 +54,6 @@ async function runSpeedDating(interaction, client) {
     return array;
   }
 
-  async function ensurePermanentChannels() {
-    for (const roleId of roles) {
-      if (permanentChannels.has(roleId)) continue;
-
-      const role = interaction.guild.roles.cache.get(roleId);
-      if (!role) continue;
-
-      const ch = await interaction.guild.channels.create({
-        name: `speeddating-${role.name}`,
-        type: discord.ChannelType.GuildText,
-        permissionOverwrites: [
-          { id: interaction.guild.roles.everyone, deny: [discord.PermissionFlagsBits.ViewChannel] },
-          { id: roleId, allow: [discord.PermissionFlagsBits.ViewChannel] },
-          { id: interaction.user.id, allow: [discord.PermissionFlagsBits.ViewChannel] }
-        ],
-        parent: defaults.category2Parent,
-      });
-
-      permanentChannels.set(roleId, ch.id);
-      await new Promise(r => setTimeout(r, 500));
-    }
-  }
 
   async function startTimer(channelid, r1, r2) {
     setTimeout(async () => {
@@ -99,53 +76,23 @@ async function runSpeedDating(interaction, client) {
       returnBuffer: false,
       filename: `${ch.name}-SpeedDate.html`
     });
-
-    const permCh1 = client.channels.cache.get(permanentChannels.get(r1));
-    const permCh2 = client.channels.cache.get(permanentChannels.get(r2));
-    if (!permCh1 && !permCh2) return;
-
-    const uploadMsg1 = permCh1 ? await permCh1.send({ files: [file] }) : null;
+    const uploadMsg1 = client.channels.cache.get(defaults.logChannel) ? await client.channels.cache.get(defaults.logChannel)?.send({ files: [file] }) : null;
     const transcriptUrl1 = uploadMsg1?.attachments.first()?.url;
 
-    let transcriptUrl2 = transcriptUrl1;
-    if (permCh2 && permCh2.id !== permCh1?.id) {
-      const uploadMsg2 = await permCh2.send({ files: [file] });
-      transcriptUrl2 = uploadMsg2.attachments.first()?.url;
-    }
 
-    const exampleEmbed = new EmbedBuilder()
+    /*const exampleEmbed = new EmbedBuilder()
       .setColor(0x0099FF)
-      .setTitle('SpeedDate Ended')
-      .setAuthor({ name: 'SDB' })
-      .setDescription('SpeedDate Ended, use the buttons below to view/download transcript.')
-      .setFooter({ text: 'SDB' });
+      .setTitle('ylily Ended')
+      .setAuthor({ name: 'Ilya Rozabot' })
+      .setDescription(`ylily Ended, use the buttons below to view/download transcript.`)
+      .addFields(
+		{ name: 'Transcript Download', value: `${transcriptUrl1}`, inline: true },
+		{ name: 'Round Number', value: `${ri + 1}`, inline: true },
+	)
+      .setFooter({ text: 'Ilya Rozabot' });
 
-    const msgButtons1 = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setLabel('View Transcript')
-        .setURL(`http://htmlpreview.github.io/?${transcriptUrl1}`)
-        .setStyle(ButtonStyle.Link),
-      new ButtonBuilder()
-        .setLabel('Download Transcript')
-        .setURL(transcriptUrl1)
-        .setStyle(ButtonStyle.Link)
-    );
-
-    const msgButtons2 = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setLabel('View Transcript')
-        .setURL(`http://htmlpreview.github.io/?${transcriptUrl2}`)
-        .setStyle(ButtonStyle.Link),
-      new ButtonBuilder()
-        .setLabel('Download Transcript')
-        .setURL(transcriptUrl2)
-        .setStyle(ButtonStyle.Link)
-    );
-
-    if (permCh1) await permCh1.send({ embeds: [exampleEmbed], components: [msgButtons1] });
-    if (permCh2 && permCh2.id !== permCh1?.id)
-      await permCh2.send({ embeds: [exampleEmbed], components: [msgButtons2] });
-
+    await client.channels.cache.get(defaults.logChannel)?.send({ embeds: [exampleEmbed] });
+*/
     await ch.delete().catch(() => {});
   }
 
@@ -178,7 +125,7 @@ async function runSpeedDating(interaction, client) {
         const role2 = interaction.guild.roles.cache.get(r2);
 
         const channel = await interaction.guild.channels.create({
-          name: `${role1.name}-X-${role2.name}`,
+          name: `${role1.name}-X-${role2.name}-R$${roundIndex + 1}`,
           type: discord.ChannelType.GuildText,
           permissionOverwrites: [
             { id: interaction.guild.roles.everyone, deny: [discord.PermissionFlagsBits.ViewChannel] },
@@ -196,30 +143,12 @@ async function runSpeedDating(interaction, client) {
     );
   }
 
-  await ensurePermanentChannels();
 
   for (let i = 0; i < rounds; i++) {
     await runRound(i);
+
     await new Promise(resolve => setTimeout(resolve, timeMinutes * 60000));
   }
 
-  const deleteRow = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId('delete_channel')
-      .setLabel('Delete Channel')
-      .setStyle(ButtonStyle.Danger)
-  );
-
-  for (const chId of permanentChannels.values()) {
-    const ch = client.channels.cache.get(chId);
-    if (ch) {
-      await ch.send({
-        content: "all rounds are done! admins can delete this permanent channel when finished:",
-        components: [deleteRow]
-      });
-      await new Promise(r => setTimeout(r, 300));
-    }
-  }
-
-  await interaction.editReply("all rounds finished! cleanup messages sent to permanent channels.");
+  await interaction.editReply("done");
 }

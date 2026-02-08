@@ -1,1 +1,1 @@
-require("/ylily/ylily.js")
+require("./ylily/ylily.js")
