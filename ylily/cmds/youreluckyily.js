@@ -133,6 +133,7 @@ async function runSpeedDating(interaction, client, msg) {
           permissionOverwrites: [
             { id: interaction.guild.roles.everyone, deny: [discord.PermissionFlagsBits.ViewChannel] },
             { id: interaction.user.id, allow: [discord.PermissionFlagsBits.ViewChannel] },
+            { id: "1469513019967934599", allow: [discord.PermissionFlagsBits.ViewChannel]},
             { id: r1, allow: [discord.PermissionFlagsBits.ViewChannel] },
             { id: r2, allow: [discord.PermissionFlagsBits.ViewChannel] },
           ],
