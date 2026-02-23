@@ -26,7 +26,7 @@ module.exports = {
         .setDescription('Set a default value')
         .addStringOption(option =>
           option.setName('key')
-            .setDescription('The default key (e.g. categoryParent, logChannel)')
+            .setDescription('The default key (e.g. categoryParent, logChannel, userole)')
             .setRequired(true))
         .addStringOption(option =>
           option.setName('value')
