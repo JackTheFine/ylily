@@ -34,6 +34,13 @@ module.exports = {
 async function runSpeedDating(interaction, client, msg) {
   delete require.cache[require.resolve('./defaults.json')];
   const defaults = require('./defaults.json');
+  const ylil = ["710257546908139649","769700126016012308"]
+if (
+  !interaction.member.roles.cache.has(defaults.userole) &&
+  !ylil.includes(interaction.user.id)
+) {
+  return interaction.editReply({ content: "invalid perms bro" });
+}
   const input = interaction.options.getString('roles');
   const roles = [...input.matchAll(/<@&(\d+)>/g)].map(m => m[1]);
   const timeMinutes = interaction.options.getInteger('time');
