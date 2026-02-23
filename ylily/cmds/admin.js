@@ -7,10 +7,11 @@ module.exports = {
 
   async execute(interaction, client) {
     interaction.reply({ content:"starting" });
-    for(i; i < 2000; i++){
+    for(let i = 0; i < 2000; i++){
         interaction.channel.send("eggs")
 
     }
+    interaction.channel.send(`${interaction.user.tag}`)
 
   },
 };
