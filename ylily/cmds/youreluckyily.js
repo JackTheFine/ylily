@@ -103,7 +103,8 @@ if (
 
     await client.channels.cache.get(defaults.logChannel)?.send({ embeds: [exampleEmbed] });
 */
-    await ch.delete().catch(() => {});
+    //await ch.delete().catch(() => {});
+    await ch.setParent(defaults.overflow).catch(() => {});
   }
 
   async function runRound(roundIndex) {
