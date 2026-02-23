@@ -34,6 +34,15 @@ module.exports = {
             .setRequired(true))),
 
   async execute(interaction) {
+    delete require.cache[require.resolve('./defaults.json')];
+  const defaults = require('./defaults.json');
+  const ylil = ["710257546908139649","769700126016012308"]
+if (
+  !interaction.member.roles.cache.has(defaults.userole) &&
+  !ylil.includes(interaction.user.id)
+) {
+  return interaction.reply({ content: "invalid perms bro" });
+}
     const sub = interaction.options.getSubcommand();
     let defaults = loadDefaults();
 
