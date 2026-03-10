@@ -17,7 +17,6 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('defaults')
     .setDescription('View or update default IDs')
-    .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand(sub =>
       sub.setName('view')
         .setDescription('View current default IDs'))
