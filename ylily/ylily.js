@@ -19,7 +19,7 @@ for (const file of commandFiles) {
 
 client1.once(Events.ClientReady, () => {
   console.log(`Ready! (logged into ${client1.user.tag})`);
-  client1.user.setPresence({activities: [{ name: `hollandarrrr i want to faaa-`, type: ActivityType.Watching}], status: 'idle'})
+  client1.user.setPresence({activities: [{ name: `wont be so nice when we beat u`, type: ActivityType.Watching}], status: 'idle'})
 });
 
 client1.on(Events.InteractionCreate, async interaction => {
