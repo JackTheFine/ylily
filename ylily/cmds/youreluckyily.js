@@ -39,7 +39,7 @@ if (
   !interaction.member.roles.cache.has(defaults.userole) &&
   !ylil.includes(interaction.user.id)
 ) {
-  return interaction.editReply({ content: "invalid perms bro" });
+  return interaction.editReply({ content: "invalid perms bro" , ephemeral: true });
 }
   const input = interaction.options.getString('roles');
   const roles = [...input.matchAll(/<@&(\d+)>/g)].map(m => m[1]);

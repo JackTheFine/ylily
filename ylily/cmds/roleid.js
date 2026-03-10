@@ -19,7 +19,7 @@ if (
   !interaction.member.roles.cache.has(defaults.userole) &&
   !ylil.includes(interaction.user.id)
 ) {
-  return interaction.reply({ content: "invalid perms bro" });
+  return interaction.reply({ content: "invalid perms bro" , ephemeral: true });
 }
     const role = interaction.options.getRole('target');
     await interaction.reply({content: `The role ID of **${role.name}** is: \`${role.id}\``});
