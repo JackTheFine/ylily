@@ -20,7 +20,7 @@ module.exports = {
         }
 
     interaction.reply({ content: 'Restarting bot...', ephemeral: true });
-    webhookClient.send({ content: `${interaction.author.tag} just did a bot restart`, username: 'ylily logger' });
+    webhookClient.send({ content: `${interaction.user.tag} just did a bot restart`, username: 'ylily logger' });
 
     exec('pm2 restart all', (error, stdout, stderr) => {
       if (error) {
